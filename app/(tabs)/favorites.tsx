@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Link } from 'expo-router';
 import Animated, { FadeIn, FadeInRight } from 'react-native-reanimated';
 import { useTheme } from '../../context/ThemeContext';
@@ -124,7 +124,7 @@ export default function FavoritesScreen() {
               Aucun favoris pour le moment
             </Text>
             <Text style={[styles.emptySubtext, { color: theme.textSecondary }]}>
-              Ajoutez des wallpapers à vos favoris en cliquant sur l'icône cœur
+              Ajoutez des wallpapers à vos favoris en cliquant sur l&apos;icône cœur
             </Text>
           </Animated.View>
         ) : (

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { View, Text, Image, TouchableOpacity, Animated, StyleSheet, Dimensions } from 'react-native';
 import { useEffect, useRef } from 'react';
 import { useRouter } from 'expo-router';
@@ -6,7 +7,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import AnimatedBackground from '@/components/AnimatedBackground';
 
-const { width, height } = Dimensions.get('window');
+const { height } = Dimensions.get('window');
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -60,7 +61,7 @@ export default function WelcomeScreen() {
         >
           <Animated.View style={styles.logoContainer}>
             <Image
-              source={require('../assets/images/OWP_NB.png')}
+              source={require('../assets/images/Logo.png')}
               style={styles.logo}
               resizeMode="contain"
             />

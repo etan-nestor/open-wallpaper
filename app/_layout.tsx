@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Stack } from "expo-router";
 import { ThemeProvider } from '../context/ThemeContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -24,13 +25,6 @@ export default function RootLayout() {
               backgroundColor: '#FF084B',
             },
             headerTintColor: '#fff',
-            // headerTitle: () => (
-            //   <Image 
-            //     source={require('../assets/images/OWP_NB.png')}
-            //     style={styles.logo}
-            //     resizeMode="contain"
-            //   />
-            // ),
             headerTitleAlign: 'center',
             headerShadowVisible: false,
           }}
