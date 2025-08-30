@@ -1,4 +1,4 @@
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Dimensions, ActivityIndicator, StatusBar } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Dimensions, StatusBar } from 'react-native';
 import { Link, useLocalSearchParams, useNavigation } from 'expo-router';
 import Animated, { FadeIn, FadeInRight, FadeOut, RotateInDownLeft } from 'react-native-reanimated';
 import { useTheme } from '../../context/ThemeContext';
@@ -27,21 +27,36 @@ export default function CategoryScreen() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [categoryData, wallpapersData] = await Promise.all([
+        // Récupérer les données de la catégorie et les wallpapers
+        const [categoryData, wallpapersResponse] = await Promise.all([
           FirestoreService.getCategoryById(id as string),
           FirestoreService.getWallpapersByCategory(id as string, 200)
         ]);
 
         setCategory(categoryData);
-        setWallpapers(wallpapersData);
+        
+        // Gérer le nouveau format de réponse
+        if (wallpapersResponse && typeof wallpapersResponse === 'object' && 'wallpapers' in wallpapersResponse) {
+          // Nouvelle version optimisée du service
+          setWallpapers(wallpapersResponse.wallpapers);
+        } else if (Array.isArray(wallpapersResponse)) {
+          // Ancienne version du service (fallback)
+          setWallpapers(wallpapersResponse);
+        } else {
+          console.warn('Unexpected wallpapers response format:', wallpapersResponse);
+          setWallpapers([]);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
+        setWallpapers([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    if (id) {
+      fetchData();
+    }
   }, [id]);
 
   const renderItem = ({ item, index }: { item: any; index: number }) => (
@@ -114,15 +129,24 @@ export default function CategoryScreen() {
           </View>
         </Animated.View>
 
-        <FlatList
-          data={wallpapers}
-          numColumns={numColumns}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          contentContainerStyle={styles.list}
-          columnWrapperStyle={styles.columnWrapper}
-          showsVerticalScrollIndicator={false}
-        />
+        {wallpapers.length > 0 ? (
+          <FlatList
+            data={wallpapers}
+            numColumns={numColumns}
+            keyExtractor={(item) => item.id}
+            renderItem={renderItem}
+            contentContainerStyle={styles.list}
+            columnWrapperStyle={styles.columnWrapper}
+            showsVerticalScrollIndicator={false}
+          />
+        ) : (
+          <View style={styles.emptyContainer}>
+            <Ionicons name="images-outline" size={48} color="rgba(255,255,255,0.5)" />
+            <Text style={[styles.emptyText, { color: theme.textSecondary }]}>
+              Aucun wallpaper disponible dans cette catégorie
+            </Text>
+          </View>
+        )}
       </View>
     </AnimatedBackground>
   );
@@ -135,7 +159,6 @@ const styles = StyleSheet.create({
   headerContainer: {
     marginBottom: 5,
   },
-
   coverImageContainer: {
     marginTop: STATUSBAR_HEIGHT-45,
     paddingHorizontal: 4,
@@ -145,7 +168,6 @@ const styles = StyleSheet.create({
   coverImage: {
     width: width - 10,
     height: 250,
-    // borderRadius: 20,
     borderBottomLeftRadius: 20,
     borderTopRightRadius: 20,
     overflow: 'hidden',
@@ -155,7 +177,6 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 10
   },
-
   headerContent: {
     position: 'absolute',
     bottom: 20,
@@ -212,16 +233,6 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  emptyText: {
-    textAlign: 'center',
-    marginTop: 20,
-    fontSize: 16
-  },
   backButton: {
     position: 'absolute',
     top: STATUSBAR_HEIGHT + 25,
@@ -240,5 +251,16 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0,0,0,0.5)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
-  }
-})
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  emptyText: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 16,
+  },
+});

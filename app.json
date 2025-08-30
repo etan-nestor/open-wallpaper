@@ -9,7 +9,8 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.etann45.openwallpaper"
     },
     "android": {
       "adaptiveIcon": {
@@ -45,6 +46,7 @@
       "eas": {
         "projectId": "f28ca821-6948-4690-8718-f8545e1802b9"
       }
-    }
+    },
+    "owner": "etann45"
   }
 }
